@@ -6,7 +6,7 @@ class CLI {
 private:
     bool closed=false;
     int currentTable = 0;
-    std::string visibleTables[5]={"","","","",""};
+    std::vector<std::string> visibleTables;
     std::string visibleColumns[5];
     std::string visibleRows[8][5];
 public:
@@ -18,7 +18,7 @@ public:
     void showDB();
     void setVisibleColumns(std::string _visibleColumns[5]);
     void setVisibleRows(std::string _visibleRows[8][5]);
-    void setVisibleTables(std::string _visibleTables[5]);
+    void setVisibleTables(std::vector<std::string>);
     void setCurrentTable(int _currentTable);
 };
 

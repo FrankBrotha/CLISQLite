@@ -21,10 +21,10 @@ void CLI::showDB() {
     clear();
     std::string tablesNames = "";
     int tablesBorders[6] = {0,16,32,48,64,80};
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < visibleTables.size(); i++)
         tablesNames += visibleTables[i] + " ";
     int startTables = 40 - tablesNames.length();
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < visibleTables.size(); i++) {
         if (i == currentTable)
             attron(A_UNDERLINE | A_BOLD);
         mvprintw(0, startTables, visibleTables[i].c_str());
@@ -53,10 +53,10 @@ void CLI::showDB() {
 
     for (int i=0; i<5; i++) {
         for (int j=0;j<visibleColumns[i].length();j++) {
-            if (tablesBorders[i]+j!=tablesBorders[i+1])
+            if (tablesBorders[i]+j<tablesBorders[i+1]-1)
                 mvaddch(2,tablesBorders[i]+j+1,visibleColumns[i][j]);
-            else if(tablesBorders[i]+j!=tablesBorders[i+1]*2)
-                mvaddch(3,tablesBorders[i]+j+1,visibleColumns[i][j]);
+            else if(tablesBorders[i]+j-15<tablesBorders[i+1])
+                mvaddch(3,tablesBorders[i]+j+1-15,visibleColumns[i][j]);
         }
     }
     for (int i=1;i<80;i++)
@@ -112,9 +112,10 @@ void CLI::setVisibleRows(std::string _visibleRows[10][5]) {
 
 }
 
-void CLI::setVisibleTables(std::string _visibleTables[5]) {
-    for (int i = 0; i < 5; i++)
-        visibleTables[i] = _visibleTables[i];
+void CLI::setVisibleTables(std::vector<std::string> _visibleTables) {
+    visibleTables.clear();
+    for (int i = 0; i < _visibleTables.size(); i++)
+        visibleTables.push_back(_visibleTables[i]);
 }
 
 void CLI::setCurrentTable(int _currentTable) {

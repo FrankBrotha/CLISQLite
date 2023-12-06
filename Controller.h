@@ -17,8 +17,10 @@ private:
     int mainTable = 0;
     void controlGUI();
     std::vector<TableInfo> data;
-    void setVisibleColumns(bool side, bool change);
-    void setVisibleRows(bool side, bool change);
+    void switchRightVisibleColumns(bool);
+    void switchLeftVisibleColumns();
+    void switchUpVisibleRows();
+    void switchDownVisibleRows(bool change);
     void setMainTable(bool side);
     void setVisibleTables();
 public:
