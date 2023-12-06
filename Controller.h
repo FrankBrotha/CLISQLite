@@ -14,10 +14,10 @@ private:
     int error=0;
     int currentColumns = 0;
     int currentRows = 0;
-    bool init = false;
+    int mainTable = 0;
     void controlGUI();
     std::vector<TableInfo> data;
-    void setVisibleColumns(bool side);
+    void setVisibleColumns(bool side, bool change);
     void setVisibleRows(bool side, bool change);
     void setMainTable(bool side);
     void setVisibleTables();

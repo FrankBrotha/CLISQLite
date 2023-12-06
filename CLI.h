@@ -5,7 +5,7 @@
 class CLI {
 private:
     bool closed=false;
-    int mainTable = 0;
+    int currentTable = 0;
     std::string visibleTables[5]={"","","","",""};
     std::string visibleColumns[5];
     std::string visibleRows[8][5];
@@ -19,9 +19,7 @@ public:
     void setVisibleColumns(std::string _visibleColumns[5]);
     void setVisibleRows(std::string _visibleRows[8][5]);
     void setVisibleTables(std::string _visibleTables[5]);
-    void rightMainTable();
-    void leftMainTable();
-    int getMainTable();
+    void setCurrentTable(int _currentTable);
 };
 
 

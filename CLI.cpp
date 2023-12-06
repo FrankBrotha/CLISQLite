@@ -25,7 +25,7 @@ void CLI::showDB() {
         tablesNames += visibleTables[i] + " ";
     int startTables = 40 - tablesNames.length();
     for (int i = 0; i < 5; i++) {
-        if (i == mainTable)
+        if (i == currentTable)
             attron(A_UNDERLINE | A_BOLD);
         mvprintw(0, startTables, visibleTables[i].c_str());
         attroff(A_UNDERLINE | A_BOLD);
@@ -117,16 +117,6 @@ void CLI::setVisibleTables(std::string _visibleTables[5]) {
         visibleTables[i] = _visibleTables[i];
 }
 
-void CLI::rightMainTable() {
-    if (mainTable < 5)
-        mainTable++;
-}
-
-void CLI::leftMainTable() {
-    if (mainTable > 0)
-        mainTable--;
-}
-
-int CLI::getMainTable() {
-    return mainTable;
+void CLI::setCurrentTable(int _currentTable) {
+    currentTable = _currentTable;
 }
