@@ -1,3 +1,0 @@
-/Users/frankbrotha/JetBrains/CLionProjects/CLISQL/cmake-build-debug/CMakeFiles/CLISQL.dir
-/Users/frankbrotha/JetBrains/CLionProjects/CLISQL/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/frankbrotha/JetBrains/CLionProjects/CLISQL/cmake-build-debug/CMakeFiles/rebuild_cache.dir
