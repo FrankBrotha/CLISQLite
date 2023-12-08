@@ -15,6 +15,8 @@ private:
     int currentColumns = 0;
     int currentRows = 0;
     int mainTable = 0;
+    int cursorX = 0;
+    int cursorY = 0;
     void controlGUI();
     std::vector<TableInfo> data;
     void switchRightVisibleColumns(bool);
@@ -23,6 +25,13 @@ private:
     void switchDownVisibleRows(bool change);
     void setMainTable(bool side);
     void setVisibleTables();
+    void updateVisibleCursor();
+    void switchRightCursor();
+    void switchLeftCursor();
+    void switchUpCursor();
+    void switchDownCursor();
+    bool notEmptyCheck();
+    std::string check();
 public:
     explicit Controller(std::string dbName, bool new_db = false);
     ~Controller();

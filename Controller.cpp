@@ -49,12 +49,17 @@ void Controller::setMainTable(bool side) {
         mainTable++;
         currentColumns = 0;
         currentRows = 0;
+        cursorX = 0;
+        cursorY = 0;
     } else if (!side && mainTable > 0) {
         mainTable--;
         currentColumns = 0;
         currentRows = 0;
+        cursorX = 0;
+        cursorY = 0;
     }
     consoleView->setCurrentTable(mainTable);
+    consoleView->setVisibleCursor(cursorX, cursorY);
     switchRightVisibleColumns(false);
     switchDownVisibleRows(false);
 }
@@ -75,7 +80,9 @@ void Controller::switchRightVisibleColumns(bool change) {
         mas[curMasId] = data[mainTable].columnNames[i];
         curMasId++;
     }
-
+    if (cursorX > maxColumns - currentColumns - 1)
+        cursorX = maxColumns - currentColumns - 1;
+    updateVisibleCursor();
     consoleView->setVisibleColumns(mas);
 }
 
@@ -116,6 +123,9 @@ void Controller::switchDownVisibleRows(bool change) {
         }
         curMasRowId++;
     }
+    if (cursorY > maxRows - currentRows)
+        cursorY = maxRows - currentRows;
+    updateVisibleCursor();
     consoleView->setVisibleRows(mas);
 }
 
@@ -147,17 +157,48 @@ void Controller::setVisibleTables() {
     vector<std::string> mas;
     if (data.size() == 0)
         return;
-    for (auto & i : data) {
+    for (auto &i: data) {
         mas.push_back(i.name);
     }
     consoleView->setVisibleTables(mas);
 }
 
+void Controller::switchRightCursor() {
+    if (data.size() == 0 || cursorX >= data[mainTable].columnNames.size() - 1 - currentColumns || cursorX >= 4) {
+        return;
+    }
+    cursorX++;
+    updateVisibleCursor();
+}
+
+void Controller::switchLeftCursor() {
+    if (cursorX <= 0) {
+        return;
+    }
+    cursorX--;
+    updateVisibleCursor();
+}
+
+void Controller::switchDownCursor() {
+    if (data.size() == 0 || cursorY > data[mainTable].tableData.size() - currentRows - 1 || cursorY >= 8 ||
+        data[mainTable].columnNames.size() == 0 || data[mainTable].tableData.size() == 0) {
+        return;
+    }
+    cursorY++;
+    updateVisibleCursor();
+}
+
+void Controller::switchUpCursor() {
+    if (cursorY <= 0) {
+        return;
+    }
+    cursorY--;
+    updateVisibleCursor();
+}
+
 void Controller::controlGUI() {
     int ch;
-    // 1 right 0 left
     switchRightVisibleColumns(false);
-    // 1 up 0 down
     switchDownVisibleRows(false);
     setVisibleTables();
     consoleView->showDB();
@@ -185,8 +226,43 @@ void Controller::controlGUI() {
         } else if (ch == 'q') {
             setMainTable(false);
             consoleView->showDB();
+        } else if (ch == KEY_RIGHT) {
+            switchRightCursor();
+            consoleView->showDB();
+        } else if (ch == KEY_LEFT) {
+            switchLeftCursor();
+            consoleView->showDB();
+        } else if (ch == KEY_UP) {
+            switchUpCursor();
+            consoleView->showDB();
+        } else if (ch == KEY_DOWN) {
+            switchDownCursor();
+            consoleView->showDB();
+        } else if (ch == 10 && notEmptyCheck()) { // ENTER
+
+            consoleView->showDB(consoleView->showInputWindowField(" "));
+
         } else
             consoleView->showDB();
 
     }
+}
+
+void Controller::updateVisibleCursor() {
+    consoleView->setVisibleCursor(cursorX, cursorY);
+}
+
+string Controller::check() {
+    string a = "";
+    if (cursorY != 0)
+        a += data[mainTable].tableData[cursorY - 1 + currentRows][cursorX + currentColumns] + "   " +
+             data[mainTable].primaryKeys[cursorY-1+currentRows] + "   ";
+
+    a += data[mainTable].columnNames[cursorX + currentColumns];
+    return a;
+}
+bool Controller::notEmptyCheck() {
+    if (data.size() == 0 || data[mainTable].columnNames.size() == 0)
+        return false;
+    return true;
 }
