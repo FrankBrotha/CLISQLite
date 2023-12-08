@@ -87,7 +87,8 @@ std::vector<TableInfo> SQL::getData() {
         }
 
         sqlite3_finalize(primaryKeysColumnStmt);
-        std::string primaryKeysQuery = "SELECT [" + new_table.primaryKeyColumnName + "] FROM '" + new_table.name + "';";;
+        std::string primaryKeysQuery =
+                "SELECT [" + new_table.primaryKeyColumnName + "] FROM '" + new_table.name + "';";;
 
         sqlite3_stmt *primaryKeysStmt;
         if (sqlite3_prepare_v2(dataBasePointer, primaryKeysQuery.c_str(), -1, &primaryKeysStmt, nullptr) !=
@@ -144,10 +145,10 @@ string SQL::renameColumn(std::string tableName, std::string currentColumnName, s
 
 string SQL::changeCellData(string tableName, string columnName, string primaryKeyColumnName, string primaryKey,
                            string newData) {
-    std::string sql ="UPDATE \""  + tableName +
-                    "\" SET \"" + columnName +
-                    "\" = '" + newData +
-                    "' WHERE [" + primaryKeyColumnName + "] = '" + primaryKey + "'";
+    std::string sql = "UPDATE \"" + tableName +
+                      "\" SET \"" + columnName +
+                      "\" = '" + newData +
+                      "' WHERE [" + primaryKeyColumnName + "] = '" + primaryKey + "'";
     int rc = sqlite3_exec(dataBasePointer, sql.c_str(), nullptr, nullptr, nullptr);
     if (rc != SQLITE_OK) {
         return sqlite3_errmsg(dataBasePointer);

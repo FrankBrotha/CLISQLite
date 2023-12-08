@@ -19,10 +19,10 @@ CLI::~CLI() {
 }
 
 void CLI::showError(std::string error) {
-    WINDOW *frame_input_win = newwin(12,32,6,29);
+    WINDOW *frame_input_win = newwin(12, 32, 6, 29);
     box(frame_input_win, 0, 0);
-    mvwprintw(frame_input_win,1,10,"ОШИБКА");
-    mvwprintw(frame_input_win,3,1,error.c_str());
+    mvwprintw(frame_input_win, 1, 10, "ОШИБКА");
+    mvwprintw(frame_input_win, 3, 1, error.c_str());
     wrefresh(frame_input_win);
     delwin(frame_input_win);
 
@@ -78,11 +78,11 @@ void CLI::showDB(std::string temparg) {
 
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 5; j++) {
-            if (visibleCursorX == j && visibleCursorY == i+1) {
+            if (visibleCursorX == j && visibleCursorY == i + 1) {
                 attron(A_UNDERLINE | A_ITALIC);
             }
             for (int ch = 0; ch < visibleRows[i][j].length(); ch++) {
-                if (tablesBorders[j] + ch < tablesBorders[j + 1]-1) {
+                if (tablesBorders[j] + ch < tablesBorders[j + 1] - 1) {
                     mvaddch(5 + i * 2, tablesBorders[j] + ch + 1, visibleRows[i][j][ch]);
                 }
             }
@@ -95,29 +95,29 @@ void CLI::showDB(std::string temparg) {
                 mvaddch(6 + i * 2, tablesBorders[j] + ch + 1, '-');
 
     //mvprintw(getmaxy(stdscr) - 1, 0, "нажми x для выхода, дурак");
-    mvprintw(getmaxy(stdscr)-1,0, temparg.c_str());
+    mvprintw(getmaxy(stdscr) - 1, 0, temparg.c_str());
     refresh();
 
 }
 
 std::string CLI::showInputWindowField(std::map<std::string, std::string> data) {
-    WINDOW *frame_input_win = newwin(13,32,5,29);
+    WINDOW *frame_input_win = newwin(13, 32, 5, 29);
     box(frame_input_win, 0, 0);
     WINDOW *input_win = newwin(3, 30, 14, 30);
-    mvwprintw(frame_input_win,1,1," Поле: ");
+    mvwprintw(frame_input_win, 1, 1, " Поле: ");
     int n = 0;
-    for (int i=8; i<61;i++) {
-        if (n<data["name"].length() &&  i<31)
-            mvwaddch(frame_input_win, 1 , i,data["name"][n]);
-        else if (n<data["name"].length())
-            mvwaddch(frame_input_win, 2 , i-30,data["name"][n]);
+    for (int i = 8; i < 61; i++) {
+        if (n < data["name"].length() && i < 31)
+            mvwaddch(frame_input_win, 1, i, data["name"][n]);
+        else if (n < data["name"].length())
+            mvwaddch(frame_input_win, 2, i - 30, data["name"][n]);
         n++;
     }
     //+ data["name"]).c_str()
-    mvwprintw(frame_input_win,3,1,(" Not Null: " + data["notNull"]).c_str());
-    mvwprintw(frame_input_win,4,1,(" Primary Key: " + data["primaryKey"]).c_str());
-    mvwprintw(frame_input_win,5,1,(" Auto Increment: " + data["autoIncrement"]).c_str());
-    mvwprintw(frame_input_win,6,1,(" Unique: " + data["unique"]).c_str());
+    mvwprintw(frame_input_win, 3, 1, (" Not Null: " + data["notNull"]).c_str());
+    mvwprintw(frame_input_win, 4, 1, (" Primary Key: " + data["primaryKey"]).c_str());
+    mvwprintw(frame_input_win, 5, 1, (" Auto Increment: " + data["autoIncrement"]).c_str());
+    mvwprintw(frame_input_win, 6, 1, (" Unique: " + data["unique"]).c_str());
     mvwprintw(frame_input_win, 8, 2, "Введите новое название:");
     wrefresh(frame_input_win);
     wrefresh(input_win);
@@ -130,18 +130,15 @@ std::string CLI::showInputWindowField(std::map<std::string, std::string> data) {
         ch = wgetch(input_win);
         if (ch == 10) {
             break;
-        }
-        else if (ch == 27) {
+        } else if (ch == 27) {
             buffer[0] = '\0';
             break;
-        }
-        else if (ch == 127) {
+        } else if (ch == 127) {
             if (index > 0) {
                 index--;
                 buffer[index] = '\0';
             }
-        }
-        else if (index<sizeof(buffer)-1) {
+        } else if (index < sizeof(buffer) - 1) {
             buffer[index] = ch;
             index++;
         }
@@ -156,29 +153,29 @@ std::string CLI::showInputWindowField(std::map<std::string, std::string> data) {
 
 }
 
-std::string CLI::showInputWindowCell(std::string columnName,std::string data) {
-    WINDOW *frame_input_win = newwin(12,32,6,29);
+std::string CLI::showInputWindowCell(std::string columnName, std::string data) {
+    WINDOW *frame_input_win = newwin(12, 32, 6, 29);
     box(frame_input_win, 0, 0);
     WINDOW *input_win = newwin(3, 30, 14, 30);
-    mvwprintw(frame_input_win,1,1," Поле: ");
+    mvwprintw(frame_input_win, 1, 1, " Поле: ");
     int n = 0;
-    for (int i=8; i<61;i++) {
-        if (n<columnName.length() &&  i<31)
-            mvwaddch(frame_input_win, 1 , i,columnName[n]);
-        else if (n<columnName.length())
-            mvwaddch(frame_input_win, 2 , i-30,columnName[n]);
+    for (int i = 8; i < 61; i++) {
+        if (n < columnName.length() && i < 31)
+            mvwaddch(frame_input_win, 1, i, columnName[n]);
+        else if (n < columnName.length())
+            mvwaddch(frame_input_win, 2, i - 30, columnName[n]);
         n++;
     }
-    mvwprintw(frame_input_win,3,1," Старое значение: ");
+    mvwprintw(frame_input_win, 3, 1, " Старое значение: ");
     n = 0;
-    for (int i=19; i<61;i++) {
-        if (n<data.length() &&  i<31)
-            mvwaddch(frame_input_win, 3 , i,data[n]);
-        else if (n<data.length())
-            mvwaddch(frame_input_win, 4 , i-30,data[n]);
+    for (int i = 19; i < 61; i++) {
+        if (n < data.length() && i < 31)
+            mvwaddch(frame_input_win, 3, i, data[n]);
+        else if (n < data.length())
+            mvwaddch(frame_input_win, 4, i - 30, data[n]);
         n++;
     }
-    mvwprintw(frame_input_win,7,1," Введите новое значение : ");
+    mvwprintw(frame_input_win, 7, 1, " Введите новое значение : ");
     wrefresh(frame_input_win);
     wrefresh(input_win);
     char buffer[90] = "";
@@ -189,18 +186,15 @@ std::string CLI::showInputWindowCell(std::string columnName,std::string data) {
         ch = wgetch(input_win);
         if (ch == 10) {
             break;
-        }
-        else if (ch == 27) {
+        } else if (ch == 27) {
             buffer[0] = '\0';
             break;
-        }
-        else if (ch == 127) {
+        } else if (ch == 127) {
             if (index > 0) {
                 index--;
                 buffer[index] = '\0';
             }
-        }
-        else if (index<sizeof(buffer)-1) {
+        } else if (index < sizeof(buffer) - 1) {
             buffer[index] = ch;
             index++;
         }
@@ -215,19 +209,19 @@ std::string CLI::showInputWindowCell(std::string columnName,std::string data) {
 }
 
 std::string CLI::showInputWindowTable(std::string currentName) {
-    WINDOW *frame_input_win = newwin(9,32,6,29);
+    WINDOW *frame_input_win = newwin(9, 32, 6, 29);
     box(frame_input_win, 0, 0);
     WINDOW *input_win = newwin(3, 30, 11, 30);
-    mvwprintw(frame_input_win,1,1," Таблица: ");
+    mvwprintw(frame_input_win, 1, 1, " Таблица: ");
     int n = 0;
-    for (int i=11; i<61;i++) {
-        if (n<currentName.length() &&  i<31)
-            mvwaddch(frame_input_win, 1 , i,currentName[n]);
-        else if (n<currentName.length())
-            mvwaddch(frame_input_win, 2 , i-30,currentName[n]);
+    for (int i = 11; i < 61; i++) {
+        if (n < currentName.length() && i < 31)
+            mvwaddch(frame_input_win, 1, i, currentName[n]);
+        else if (n < currentName.length())
+            mvwaddch(frame_input_win, 2, i - 30, currentName[n]);
         n++;
     }
-    mvwprintw(frame_input_win,4,1," Введите новое значение: ");
+    mvwprintw(frame_input_win, 4, 1, " Введите новое значение: ");
     wrefresh(frame_input_win);
     wrefresh(input_win);
     char buffer[90] = "";
@@ -238,18 +232,15 @@ std::string CLI::showInputWindowTable(std::string currentName) {
         ch = wgetch(input_win);
         if (ch == 10) {
             break;
-        }
-        else if (ch == 27) {
+        } else if (ch == 27) {
             buffer[0] = '\0';
             break;
-        }
-        else if (ch == 127) {
+        } else if (ch == 127) {
             if (index > 0) {
                 index--;
                 buffer[index] = '\0';
             }
-        }
-        else if (index<sizeof(buffer)-1) {
+        } else if (index < sizeof(buffer) - 1) {
             buffer[index] = ch;
             index++;
         }
