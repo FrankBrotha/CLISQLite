@@ -339,4 +339,5 @@ bool Controller::renameTable() {
         consoleView->showError(sqlRequest);
         return false;
     }
+
 }
