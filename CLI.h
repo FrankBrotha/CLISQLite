@@ -29,9 +29,9 @@ public:
 
     void showDB(std::string temparg=" ");
 
-    std::string showInputWindowField(std::string);
+    std::string showInputWindowField(std::map<std::string, std::string>);
 
-    std::string showInputWindowCell();
+    std::string showInputWindowCell(std::string columnName,std::string data);
 
     std::string showInputWindowTable();
 
@@ -44,6 +44,8 @@ public:
     void setCurrentTable(int _currentTable);
 
     void setVisibleCursor(int x, int y);
+
+    void showError(std::string error);
 };
 
 

@@ -31,6 +31,9 @@ private:
     void switchUpCursor();
     void switchDownCursor();
     bool notEmptyCheck();
+    bool renameColumn();
+    bool changeCellData();
+    bool renameTable();
     std::string check();
 public:
     explicit Controller(std::string dbName, bool new_db = false);

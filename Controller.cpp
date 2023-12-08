@@ -238,9 +238,20 @@ void Controller::controlGUI() {
         } else if (ch == KEY_DOWN) {
             switchDownCursor();
             consoleView->showDB();
-        } else if (ch == 10 && notEmptyCheck()) { // ENTER
+        } else if (ch == 'r' && notEmptyCheck()) {
 
-            consoleView->showDB(consoleView->showInputWindowField(" "));
+        }
+        else if (ch == 10 && notEmptyCheck()) { // ENTER
+            if (cursorY == 0) {
+                if (!(renameColumn()))
+                    getch();
+                consoleView->showDB();
+            }
+            else {
+                if (!changeCellData())
+                    getch();
+                consoleView->showDB();
+            }
 
         } else
             consoleView->showDB();
@@ -256,13 +267,63 @@ string Controller::check() {
     string a = "";
     if (cursorY != 0)
         a += data[mainTable].tableData[cursorY - 1 + currentRows][cursorX + currentColumns] + "   " +
-             data[mainTable].primaryKeys[cursorY-1+currentRows] + "   ";
+             data[mainTable].primaryKeys[cursorY - 1 + currentRows] + "   ";
 
     a += data[mainTable].columnNames[cursorX + currentColumns];
     return a;
 }
+
 bool Controller::notEmptyCheck() {
     if (data.size() == 0 || data[mainTable].columnNames.size() == 0)
         return false;
     return true;
 }
+
+bool Controller::renameColumn() {
+    map<std::string,std::string> columnData;
+    columnData = sqlModel->getColumnData(data[mainTable].name,
+                                data[mainTable].columnNames[cursorX + currentColumns]);
+    string newName = consoleView->showInputWindowField(columnData);
+    if (newName=="")
+        return true;
+    string sqlRequest = sqlModel->renameColumn(data[mainTable].name,
+                                               columnData["name"],
+                                               newName);
+    if (sqlRequest=="OK") {
+        data = sqlModel->getData();
+        switchRightVisibleColumns(false);
+        switchDownVisibleRows(false);
+        return true;
+    }
+    else {
+        consoleView->showError(sqlRequest);
+        return false;
+    }
+}
+
+bool Controller::changeCellData() {
+    string newData = consoleView->showInputWindowCell(data[mainTable].columnNames[cursorX + currentColumns],
+                                                      data[mainTable].tableData[cursorY - 1 + currentRows][cursorX + currentColumns]);
+    if (newData=="")
+        return true;
+    string sqlRequest = sqlModel->changeCellData(data[mainTable].name,
+                             data[mainTable].columnNames[cursorX + currentColumns],
+                             data[mainTable].primaryKeyColumnName,
+                             data[mainTable].primaryKeys[cursorY - 1 + currentRows],
+                             newData);
+    if (sqlRequest=="OK") {
+        data = sqlModel->getData();
+        switchDownVisibleRows(false);
+        switchRightVisibleColumns(false);
+        return true;
+    }
+    else {
+        consoleView->showError(sqlRequest);
+        return false;
+    }
+
+}
+
+//bool Controller::renameTable() {
+//    consoleView->showInputWindowTable();
+//}

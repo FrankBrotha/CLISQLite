@@ -12,6 +12,10 @@ public:
     SQL(Controller*, const string&, bool new_db);
     ~SQL();
     std::vector<TableInfo> getData();
+    std::map<std::string, std::string> getColumnData(string tableName, string columnName);
+    string renameColumn(string tableName, string currentColumnName, string newColumnName);
+    string changeCellData(string tableName, string columnName,
+                          string primaryKeyColumnName, string primaryKey, string newData);
 private:
     void onOpenError();
     sqlite3* dataBasePointer = nullptr;

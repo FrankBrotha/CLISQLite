@@ -105,6 +105,54 @@ std::vector<TableInfo> SQL::getData() {
     return dataBase;
 }
 
+std::map<std::string, string> SQL::getColumnData(string tableName, string columnName) {
+    map<string, string> data;
+    // Получаем информацию о таблице из sqlite_master
+    sqlite3_stmt *stmt;
+
+
+    // Получаем информацию о каждом столбце из pragma_table_info
+    std::string columnInfoQuery = "PRAGMA table_info(" + std::string(tableName) + ")";
+    if (sqlite3_prepare_v2(dataBasePointer, columnInfoQuery.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        controller->onCreateError();
+    }
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        if (reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1)) == columnName) {
+            data["name"] = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+            data["notNull"] = sqlite3_column_int(stmt, 3) == 1 ? "true" : "false";
+            data["primaryKey"] = sqlite3_column_int(stmt, 5) == 1 ? "true" : "false";
+            data["autoIncrement"] = sqlite3_column_int(stmt, 6) == 1 ? "true" : "false";
+            data["unique"] = sqlite3_column_int(stmt, 8) == 1 ? "true" : "false";
+            break;
+        }
+    }
+
+    sqlite3_finalize(stmt);
+    return data;
+}
+string SQL::renameColumn(std::string tableName, std::string currentColumnName, std::string newColumnName) {
+    string sql = "ALTER TABLE "+ tableName +" RENAME COLUMN '"+ currentColumnName + "' TO '" + newColumnName +"'";
+    int rc = sqlite3_exec(dataBasePointer, sql.c_str(), nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+            return sqlite3_errmsg(dataBasePointer);
+    }
+    else
+        return "OK";
+}
+
+string SQL::changeCellData(string tableName, string columnName, string primaryKeyColumnName, string primaryKey, string newData) {
+    std::string sql = "UPDATE '" + tableName +
+                      "' SET '" + columnName +
+                      "' = '" + newData +
+                      "' WHERE " + primaryKeyColumnName + " = '" + primaryKey+"'";
+    int rc = sqlite3_exec(dataBasePointer, sql.c_str(), nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        return sqlite3_errmsg(dataBasePointer);
+    }
+    else
+        return "OK";
+}
 
 
 

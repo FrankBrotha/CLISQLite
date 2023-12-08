@@ -18,6 +18,16 @@ CLI::~CLI() {
         endwin();
 }
 
+void CLI::showError(std::string error) {
+    WINDOW *frame_input_win = newwin(12,32,6,29);
+    box(frame_input_win, 0, 0);
+    mvwprintw(frame_input_win,1,10,"ОШИБКА");
+    mvwprintw(frame_input_win,3,1,error.c_str());
+    wrefresh(frame_input_win);
+    delwin(frame_input_win);
+
+}
+
 void CLI::showDB(std::string temparg) {
     clear();
     std::string tablesNames = "";
@@ -58,7 +68,7 @@ void CLI::showDB(std::string temparg) {
         for (int j = 0; j < visibleColumns[i].length(); j++) {
             if (tablesBorders[i] + j < tablesBorders[i + 1] - 1)
                 mvaddch(2, tablesBorders[i] + j + 1, visibleColumns[i][j]);
-            else if (tablesBorders[i] + j - 15 < tablesBorders[i + 1])
+            else if (tablesBorders[i] + j - 14 < tablesBorders[i + 1])
                 mvaddch(3, tablesBorders[i] + j + 1 - 15, visibleColumns[i][j]);
         }
         attroff(A_UNDERLINE | A_ITALIC);
@@ -72,7 +82,7 @@ void CLI::showDB(std::string temparg) {
                 attron(A_UNDERLINE | A_ITALIC);
             }
             for (int ch = 0; ch < visibleRows[i][j].length(); ch++) {
-                if (tablesBorders[j] + ch != tablesBorders[j + 1]) {
+                if (tablesBorders[j] + ch < tablesBorders[j + 1]-1) {
                     mvaddch(5 + i * 2, tablesBorders[j] + ch + 1, visibleRows[i][j][ch]);
                 }
             }
@@ -90,14 +100,28 @@ void CLI::showDB(std::string temparg) {
 
 }
 
-std::string CLI::showInputWindowField(std::string columnData) {
-    WINDOW *frame_input_win = newwin(12,32,6,29);
+std::string CLI::showInputWindowField(std::map<std::string, std::string> data) {
+    WINDOW *frame_input_win = newwin(13,32,5,29);
     box(frame_input_win, 0, 0);
-    WINDOW *input_win = newwin(4, 30, 13, 30);
-    mvwprintw(frame_input_win, 6, 2, "Введите новый текст:");
+    WINDOW *input_win = newwin(3, 30, 14, 30);
+    mvwprintw(frame_input_win,1,1," Поле: ");
+    int n = 0;
+    for (int i=8; i<61;i++) {
+        if (n<data["name"].length() &&  i<31)
+            mvwaddch(frame_input_win, 1 , i,data["name"][n]);
+        else if (n<data["name"].length())
+            mvwaddch(frame_input_win, 2 , i-30,data["name"][n]);
+        n++;
+    }
+    //+ data["name"]).c_str()
+    mvwprintw(frame_input_win,3,1,(" Not Null: " + data["notNull"]).c_str());
+    mvwprintw(frame_input_win,4,1,(" Primary Key: " + data["primaryKey"]).c_str());
+    mvwprintw(frame_input_win,5,1,(" Auto Increment: " + data["autoIncrement"]).c_str());
+    mvwprintw(frame_input_win,6,1,(" Unique: " + data["unique"]).c_str());
+    mvwprintw(frame_input_win, 8, 2, "Введите новое название:");
     wrefresh(frame_input_win);
     wrefresh(input_win);
-    char buffer[119] = "";
+    char buffer[90] = "";
     int ch;
     int index = 0;
     //echo();
@@ -131,6 +155,66 @@ std::string CLI::showInputWindowField(std::string columnData) {
     return {buffer};
 
 }
+
+std::string CLI::showInputWindowCell(std::string columnName,std::string data) {
+    WINDOW *frame_input_win = newwin(12,32,6,29);
+    box(frame_input_win, 0, 0);
+    WINDOW *input_win = newwin(3, 30, 14, 30);
+    mvwprintw(frame_input_win,1,1," Поле: ");
+    int n = 0;
+    for (int i=8; i<61;i++) {
+        if (n<columnName.length() &&  i<31)
+            mvwaddch(frame_input_win, 1 , i,columnName[n]);
+        else if (n<columnName.length())
+            mvwaddch(frame_input_win, 2 , i-30,columnName[n]);
+        n++;
+    }
+    mvwprintw(frame_input_win,3,1," Старое значение: ");
+    n = 0;
+    for (int i=19; i<61;i++) {
+        if (n<data.length() &&  i<31)
+            mvwaddch(frame_input_win, 3 , i,data[n]);
+        else if (n<data.length())
+            mvwaddch(frame_input_win, 4 , i-30,data[n]);
+        n++;
+    }
+    mvwprintw(frame_input_win,5,1," Тип : ");
+    mvwprintw(frame_input_win,7,1," Введите новое значение : ");
+    wrefresh(frame_input_win);
+    wrefresh(input_win);
+    char buffer[90] = "";
+    int ch;
+    int index = 0;
+    curs_set(1);
+    while (true) {
+        ch = wgetch(input_win);
+        if (ch == 10) {
+            break;
+        }
+        else if (ch == 27) {
+            buffer[0] = '\0';
+            break;
+        }
+        else if (ch == 127) {
+            if (index > 0) {
+                index--;
+                buffer[index] = '\0';
+            }
+        }
+        else if (index<sizeof(buffer)-1) {
+            buffer[index] = ch;
+            index++;
+        }
+        wclear(input_win);
+        mvwprintw(input_win, 0, 0, buffer);
+        wrefresh(input_win);
+    }
+    curs_set(0);
+    delwin(frame_input_win);
+    delwin(input_win);
+    return {buffer};
+}
+
 
 void CLI::onOpenError() {
     endwin();
