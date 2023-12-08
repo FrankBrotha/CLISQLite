@@ -20,11 +20,16 @@ CLI::~CLI() {
 
 void CLI::showError(std::string error) {
     WINDOW *frame_input_win = newwin(12, 32, 6, 29);
+    WINDOW *error_message_win = newwin(8,30,9,30);
     box(frame_input_win, 0, 0);
     mvwprintw(frame_input_win, 1, 10, "ОШИБКА");
-    mvwprintw(frame_input_win, 3, 1, error.c_str());
+    int n = 0;
+
+    mvwprintw(error_message_win, 0, 0, error.c_str());
     wrefresh(frame_input_win);
+    wrefresh(error_message_win);
     delwin(frame_input_win);
+    delwin(error_message_win);
 
 }
 
