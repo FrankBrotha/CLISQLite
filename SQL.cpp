@@ -36,14 +36,14 @@ std::vector<TableInfo> SQL::getData() {
         new_table.name = (reinterpret_cast<const char *>(sqlite3_column_text(tableStmt, 0)));
 
         sqlite3_stmt *countStmt;
-        std::string countQuery = "SELECT COUNT(*) FROM " + std::string(new_table.name) + ";";
+        std::string countQuery = "SELECT COUNT(*) FROM '" + std::string(new_table.name) + "';";
         if (sqlite3_prepare_v2(dataBasePointer, countQuery.c_str(), -1, &countStmt, nullptr) != SQLITE_OK) {
             controller->onCreateError();
         }
         sqlite3_step(countStmt);
 
 
-        std::string dataQueryString = "SELECT * FROM " + std::string(new_table.name) + ";";
+        std::string dataQueryString = "SELECT * FROM '" + std::string(new_table.name) + "';";
         sqlite3_stmt *dataStmt;
         if (sqlite3_prepare_v2(dataBasePointer, dataQueryString.c_str(), -1, &dataStmt, nullptr) != SQLITE_OK) {
             controller->onCreateError();
@@ -87,7 +87,8 @@ std::vector<TableInfo> SQL::getData() {
         }
 
         sqlite3_finalize(primaryKeysColumnStmt);
-        std::string primaryKeysQuery = "SELECT " + new_table.primaryKeyColumnName + " FROM " + new_table.name + ";";
+        std::string primaryKeysQuery = "SELECT [" + new_table.primaryKeyColumnName + "] FROM '" + new_table.name + "';";;
+
         sqlite3_stmt *primaryKeysStmt;
         if (sqlite3_prepare_v2(dataBasePointer, primaryKeysQuery.c_str(), -1, &primaryKeysStmt, nullptr) !=
             SQLITE_OK) {
@@ -131,29 +132,37 @@ std::map<std::string, string> SQL::getColumnData(string tableName, string column
     sqlite3_finalize(stmt);
     return data;
 }
-string SQL::renameColumn(std::string tableName, std::string currentColumnName, std::string newColumnName) {
-    string sql = "ALTER TABLE "+ tableName +" RENAME COLUMN '"+ currentColumnName + "' TO '" + newColumnName +"'";
-    int rc = sqlite3_exec(dataBasePointer, sql.c_str(), nullptr, nullptr, nullptr);
-    if (rc != SQLITE_OK) {
-            return sqlite3_errmsg(dataBasePointer);
-    }
-    else
-        return "OK";
-}
 
-string SQL::changeCellData(string tableName, string columnName, string primaryKeyColumnName, string primaryKey, string newData) {
-    std::string sql = "UPDATE '" + tableName +
-                      "' SET '" + columnName +
-                      "' = '" + newData +
-                      "' WHERE " + primaryKeyColumnName + " = '" + primaryKey+"'";
+string SQL::renameColumn(std::string tableName, std::string currentColumnName, std::string newColumnName) {
+    string sql = "ALTER TABLE '" + tableName + "' RENAME COLUMN '" + currentColumnName + "' TO '" + newColumnName + "'";
     int rc = sqlite3_exec(dataBasePointer, sql.c_str(), nullptr, nullptr, nullptr);
     if (rc != SQLITE_OK) {
         return sqlite3_errmsg(dataBasePointer);
-    }
-    else
+    } else
         return "OK";
 }
 
+string SQL::changeCellData(string tableName, string columnName, string primaryKeyColumnName, string primaryKey,
+                           string newData) {
+    std::string sql ="UPDATE \""  + tableName +
+                    "\" SET \"" + columnName +
+                    "\" = '" + newData +
+                    "' WHERE [" + primaryKeyColumnName + "] = '" + primaryKey + "'";
+    int rc = sqlite3_exec(dataBasePointer, sql.c_str(), nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        return sqlite3_errmsg(dataBasePointer);
+    } else
+        return "OK";
+}
+
+string SQL::renameTable(std::string oldTableName, std::string newTableName) {
+    std::string sql = "ALTER TABLE '" + oldTableName + "' RENAME TO '" + newTableName + "'";
+    int rc = sqlite3_exec(dataBasePointer, sql.c_str(), nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        return sqlite3_errmsg(dataBasePointer);
+    } else
+        return "OK";
+}
 
 
 

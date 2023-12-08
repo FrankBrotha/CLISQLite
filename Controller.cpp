@@ -239,15 +239,15 @@ void Controller::controlGUI() {
             switchDownCursor();
             consoleView->showDB();
         } else if (ch == 'r' && notEmptyCheck()) {
-
-        }
-        else if (ch == 10 && notEmptyCheck()) { // ENTER
+            if (!renameTable())
+                getch();
+            consoleView->showDB();
+        } else if (ch == 10 && notEmptyCheck()) { // ENTER
             if (cursorY == 0) {
                 if (!(renameColumn()))
                     getch();
                 consoleView->showDB();
-            }
-            else {
+            } else {
                 if (!changeCellData())
                     getch();
                 consoleView->showDB();
@@ -280,22 +280,21 @@ bool Controller::notEmptyCheck() {
 }
 
 bool Controller::renameColumn() {
-    map<std::string,std::string> columnData;
+    map<std::string, std::string> columnData;
     columnData = sqlModel->getColumnData(data[mainTable].name,
-                                data[mainTable].columnNames[cursorX + currentColumns]);
+                                         data[mainTable].columnNames[cursorX + currentColumns]);
     string newName = consoleView->showInputWindowField(columnData);
-    if (newName=="")
+    if (newName == "")
         return true;
     string sqlRequest = sqlModel->renameColumn(data[mainTable].name,
                                                columnData["name"],
                                                newName);
-    if (sqlRequest=="OK") {
+    if (sqlRequest == "OK") {
         data = sqlModel->getData();
         switchRightVisibleColumns(false);
         switchDownVisibleRows(false);
         return true;
-    }
-    else {
+    } else {
         consoleView->showError(sqlRequest);
         return false;
     }
@@ -303,27 +302,41 @@ bool Controller::renameColumn() {
 
 bool Controller::changeCellData() {
     string newData = consoleView->showInputWindowCell(data[mainTable].columnNames[cursorX + currentColumns],
-                                                      data[mainTable].tableData[cursorY - 1 + currentRows][cursorX + currentColumns]);
-    if (newData=="")
+                                                      data[mainTable].tableData[cursorY - 1 + currentRows][cursorX +
+                                                                                                           currentColumns]);
+    if (newData == "")
         return true;
     string sqlRequest = sqlModel->changeCellData(data[mainTable].name,
-                             data[mainTable].columnNames[cursorX + currentColumns],
-                             data[mainTable].primaryKeyColumnName,
-                             data[mainTable].primaryKeys[cursorY - 1 + currentRows],
-                             newData);
-    if (sqlRequest=="OK") {
+                                                 data[mainTable].columnNames[cursorX + currentColumns],
+                                                 data[mainTable].primaryKeyColumnName,
+                                                 data[mainTable].primaryKeys[cursorY - 1 + currentRows],
+                                                 newData);
+    if (sqlRequest == "OK") {
         data = sqlModel->getData();
         switchDownVisibleRows(false);
         switchRightVisibleColumns(false);
         return true;
-    }
-    else {
+    } else {
         consoleView->showError(sqlRequest);
         return false;
     }
 
 }
 
-//bool Controller::renameTable() {
-//    consoleView->showInputWindowTable();
-//}
+bool Controller::renameTable() {
+    string newName;
+    newName = consoleView->showInputWindowTable(data[mainTable].name);
+    if (newName == "")
+        return true;
+    string sqlRequest = sqlModel->renameTable(data[mainTable].name, newName);
+    if (sqlRequest == "OK") {
+        data = sqlModel->getData();
+        switchDownVisibleRows(false);
+        switchRightVisibleColumns(false);
+        setVisibleTables();
+        return true;
+    } else {
+        consoleView->showError(sqlRequest);
+        return false;
+    }
+}

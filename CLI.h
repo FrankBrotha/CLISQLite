@@ -33,7 +33,7 @@ public:
 
     std::string showInputWindowCell(std::string columnName,std::string data);
 
-    std::string showInputWindowTable();
+    std::string showInputWindowTable(std::string currentName);
 
     void setVisibleColumns(std::string _visibleColumns[5]);
 

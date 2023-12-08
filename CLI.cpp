@@ -34,7 +34,7 @@ void CLI::showDB(std::string temparg) {
     int tablesBorders[6] = {0, 16, 32, 48, 64, 80};
     for (int i = 0; i < visibleTables.size(); i++)
         tablesNames += visibleTables[i] + " ";
-    int startTables = 40 - tablesNames.length();
+    int startTables = 0;
     for (int i = 0; i < visibleTables.size(); i++) {
         if (i == currentTable)
             attron(A_UNDERLINE | A_BOLD);
@@ -178,7 +178,6 @@ std::string CLI::showInputWindowCell(std::string columnName,std::string data) {
             mvwaddch(frame_input_win, 4 , i-30,data[n]);
         n++;
     }
-    mvwprintw(frame_input_win,5,1," Тип : ");
     mvwprintw(frame_input_win,7,1," Введите новое значение : ");
     wrefresh(frame_input_win);
     wrefresh(input_win);
@@ -215,6 +214,54 @@ std::string CLI::showInputWindowCell(std::string columnName,std::string data) {
     return {buffer};
 }
 
+std::string CLI::showInputWindowTable(std::string currentName) {
+    WINDOW *frame_input_win = newwin(9,32,6,29);
+    box(frame_input_win, 0, 0);
+    WINDOW *input_win = newwin(3, 30, 11, 30);
+    mvwprintw(frame_input_win,1,1," Таблица: ");
+    int n = 0;
+    for (int i=11; i<61;i++) {
+        if (n<currentName.length() &&  i<31)
+            mvwaddch(frame_input_win, 1 , i,currentName[n]);
+        else if (n<currentName.length())
+            mvwaddch(frame_input_win, 2 , i-30,currentName[n]);
+        n++;
+    }
+    mvwprintw(frame_input_win,4,1," Введите новое значение: ");
+    wrefresh(frame_input_win);
+    wrefresh(input_win);
+    char buffer[90] = "";
+    int ch;
+    int index = 0;
+    curs_set(1);
+    while (true) {
+        ch = wgetch(input_win);
+        if (ch == 10) {
+            break;
+        }
+        else if (ch == 27) {
+            buffer[0] = '\0';
+            break;
+        }
+        else if (ch == 127) {
+            if (index > 0) {
+                index--;
+                buffer[index] = '\0';
+            }
+        }
+        else if (index<sizeof(buffer)-1) {
+            buffer[index] = ch;
+            index++;
+        }
+        wclear(input_win);
+        mvwprintw(input_win, 0, 0, buffer);
+        wrefresh(input_win);
+    }
+    curs_set(0);
+    delwin(frame_input_win);
+    delwin(input_win);
+    return {buffer};
+}
 
 void CLI::onOpenError() {
     endwin();
