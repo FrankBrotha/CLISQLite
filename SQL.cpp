@@ -2,21 +2,14 @@
 #include "vector"
 #include "sqlite3.h"
 
-SQL::SQL(Controller *_controller, const string &dbName, bool new_db) {
+SQL::SQL(Controller *_controller, const string &dbName) {
     controller = _controller;
     int rc;
-    if (new_db)
-        rc = sqlite3_open(dbName.c_str(), &dataBasePointer);
-    else
-        rc = sqlite3_open_v2(dbName.c_str(), &dataBasePointer, SQLITE_OPEN_READWRITE, NULL);
+    rc = sqlite3_open_v2(dbName.c_str(), &dataBasePointer, SQLITE_OPEN_READWRITE, NULL);
     if (rc != SQLITE_OK || dbName == "") {
-        if (new_db)
-            controller->onCreateError();
-        else
             controller->onOpenError();
     }
-//    else
-//        controller->sqlInitCompele();
+
 
 }
 
@@ -29,7 +22,7 @@ std::vector<TableInfo> SQL::getData() {
     sqlite3_stmt *tableStmt;
     std::string tableQuery = "SELECT name FROM sqlite_master WHERE type='table';";
     if (sqlite3_prepare_v2(dataBasePointer, tableQuery.c_str(), -1, &tableStmt, nullptr) != SQLITE_OK) {
-        controller->onCreateError();
+        controller->onSQLError(sqlite3_errmsg(dataBasePointer));
     }
     while (sqlite3_step(tableStmt) == SQLITE_ROW) {
         TableInfo new_table;
@@ -38,7 +31,7 @@ std::vector<TableInfo> SQL::getData() {
         sqlite3_stmt *countStmt;
         std::string countQuery = "SELECT COUNT(*) FROM '" + std::string(new_table.name) + "';";
         if (sqlite3_prepare_v2(dataBasePointer, countQuery.c_str(), -1, &countStmt, nullptr) != SQLITE_OK) {
-            controller->onCreateError();
+            controller->onSQLError(sqlite3_errmsg(dataBasePointer));
         }
         sqlite3_step(countStmt);
 
@@ -46,7 +39,7 @@ std::vector<TableInfo> SQL::getData() {
         std::string dataQueryString = "SELECT * FROM '" + std::string(new_table.name) + "';";
         sqlite3_stmt *dataStmt;
         if (sqlite3_prepare_v2(dataBasePointer, dataQueryString.c_str(), -1, &dataStmt, nullptr) != SQLITE_OK) {
-            controller->onCreateError();
+            controller->onSQLError(sqlite3_errmsg(dataBasePointer));
         }
 
         new_table.tableData.resize(sqlite3_column_int(countStmt, 0),
@@ -73,7 +66,7 @@ std::vector<TableInfo> SQL::getData() {
         sqlite3_stmt *primaryKeysColumnStmt;
         if (sqlite3_prepare_v2(dataBasePointer, primaryKeysColumnQuery.c_str(), -1, &primaryKeysColumnStmt, nullptr) !=
             SQLITE_OK) {
-            controller->onCreateError();
+            controller->onSQLError(sqlite3_errmsg(dataBasePointer));
         }
         while (sqlite3_step(primaryKeysColumnStmt) == SQLITE_ROW) {
             int pk = sqlite3_column_int(primaryKeysColumnStmt, 5);
@@ -93,7 +86,7 @@ std::vector<TableInfo> SQL::getData() {
         sqlite3_stmt *primaryKeysStmt;
         if (sqlite3_prepare_v2(dataBasePointer, primaryKeysQuery.c_str(), -1, &primaryKeysStmt, nullptr) !=
             SQLITE_OK) {
-            controller->onCreateError();
+            controller->onSQLError(sqlite3_errmsg(dataBasePointer));
         }
         while (sqlite3_step(primaryKeysStmt) == SQLITE_ROW) {
             new_table.primaryKeys.push_back(
@@ -116,7 +109,7 @@ std::map<std::string, string> SQL::getColumnData(string tableName, string column
     // Получаем информацию о каждом столбце из pragma_table_info
     std::string columnInfoQuery = "PRAGMA table_info(" + std::string(tableName) + ")";
     if (sqlite3_prepare_v2(dataBasePointer, columnInfoQuery.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
-        controller->onCreateError();
+        controller->onSQLError(sqlite3_errmsg(dataBasePointer));
     }
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {

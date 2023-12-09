@@ -13,7 +13,7 @@ using namespace std;
 
 class SQL {
 public:
-    SQL(Controller *, const string &, bool new_db);
+    SQL(Controller *, const string &);
 
     ~SQL();
 
@@ -30,7 +30,6 @@ public:
 
 private:
     void onOpenError();
-
     sqlite3 *dataBasePointer = nullptr;
     Controller *controller = nullptr;
 };

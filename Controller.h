@@ -34,12 +34,11 @@ private:
     bool renameColumn();
     bool changeCellData();
     bool renameTable();
-    std::string check();
 public:
-    explicit Controller(std::string dbName, bool new_db = false);
+    explicit Controller(std::string dbName);
     ~Controller();
     void onOpenError();
-    void onCreateError();
+    void onSQLError(std::string error);
     void onExtensionError();
     void sqlInitCompele();
 

@@ -265,10 +265,10 @@ void CLI::onOpenError() {
     printf("Не удалось открыть базу данных, используйте аргумент -n для её создания\n");
 }
 
-void CLI::onCreateError() {
+void CLI::onSQLError(std::string error) {
     endwin();
     closed = true;
-    printf("Не удалось создать базу данных\n");
+    printf((error+"\n").c_str());
 }
 
 void CLI::onExtenstionError() {

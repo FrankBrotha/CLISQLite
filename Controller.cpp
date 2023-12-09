@@ -4,10 +4,10 @@
 
 using namespace std;
 
-Controller::Controller(string dbName, bool new_db) {
+Controller::Controller(string dbName) {
     if (dbName.size() >= 3 && dbName.substr(dbName.size() - 3) == ".db") {
 
-        sqlModel = new SQL(this, dbName, new_db);
+        sqlModel = new SQL(this, dbName);
         if (error == 0)
             sqlInitCompele();
     } else
@@ -24,9 +24,8 @@ void Controller::onOpenError() {
     error = 1;
 }
 
-void Controller::onCreateError() {
-    consoleView->onCreateError();
-    error = 1;
+void Controller::onSQLError(string error) {
+    consoleView->onSQLError(error);
 };
 
 void Controller::onExtensionError() {
@@ -261,16 +260,6 @@ void Controller::controlGUI() {
 
 void Controller::updateVisibleCursor() {
     consoleView->setVisibleCursor(cursorX, cursorY);
-}
-
-string Controller::check() {
-    string a = "";
-    if (cursorY != 0)
-        a += data[mainTable].tableData[cursorY - 1 + currentRows][cursorX + currentColumns] + "   " +
-             data[mainTable].primaryKeys[cursorY - 1 + currentRows] + "   ";
-
-    a += data[mainTable].columnNames[cursorX + currentColumns];
-    return a;
 }
 
 bool Controller::notEmptyCheck() {

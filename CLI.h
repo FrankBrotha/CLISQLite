@@ -23,7 +23,7 @@ public:
 
     void onOpenError();
 
-    void onCreateError();
+    void onSQLError(std::string error);
 
     void onExtenstionError();
 
