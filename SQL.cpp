@@ -9,8 +9,6 @@ SQL::SQL(Controller *_controller, const string &dbName) {
     if (rc != SQLITE_OK || dbName == "") {
             controller->onOpenError();
     }
-
-
 }
 
 SQL::~SQL() {
