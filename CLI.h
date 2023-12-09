@@ -27,7 +27,7 @@ public:
 
     void onExtenstionError();
 
-    void showDB(std::string temparg=" ");
+    void showDB();
 
     std::string showInputWindowField(std::map<std::string, std::string>);
 

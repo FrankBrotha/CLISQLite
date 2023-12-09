@@ -33,7 +33,7 @@ void CLI::showError(std::string error) {
 
 }
 
-void CLI::showDB(std::string temparg) {
+void CLI::showDB() {
     clear();
     std::string tablesNames = "";
     int tablesBorders[6] = {0, 16, 32, 48, 64, 80};
@@ -98,14 +98,31 @@ void CLI::showDB(std::string temparg) {
         for (int j = 0; j < 5; j++)
             for (int ch = 0; ch < 15; ch++)
                 mvaddch(6 + i * 2, tablesBorders[j] + ch + 1, '-');
+    if (tablesNames.size()==0) {
+        for (int y = 2; y < 20; y++)
+            for (int x = 1; x < 80; x++)
+                mvaddch(y, x, ' ');
+        mvprintw(10, 34, "EMPTY DATA");
+    }
 
+    mvprintw(22,0,"Q - Перейти к таблице слевва W - Перейти к верхним строкам E - Перейти к таблице справа");
+    mvprintw(23,0,"A - Перейти к столбцу слева  S - Перейти к нижним строкам  D - Перейти к столбцу справа");
+    mvprintw(24,0, "←, →, ↑, ↓ - Управление курсором Enter - Изменить выбранное значение");
+    mvprintw(25,0,"R - переименовать текущую таблицу");
     //mvprintw(getmaxy(stdscr) - 1, 0, "нажми x для выхода, дурак");
-    mvprintw(getmaxy(stdscr) - 1, 0, temparg.c_str());
     refresh();
 
 }
 
 std::string CLI::showInputWindowField(std::map<std::string, std::string> data) {
+    for (int i=0; i<90;i++) {
+        mvprintw(22,i, " ");
+        mvprintw(23,i, " ");
+        mvprintw(24,i, " ");
+        mvprintw(25,i, " ");
+    }
+    mvprintw(22,0,"ESC - Отмена выбора Enter - Подтвердить ввод");
+    refresh();
     WINDOW *frame_input_win = newwin(13, 32, 5, 29);
     box(frame_input_win, 0, 0);
     WINDOW *input_win = newwin(3, 30, 14, 30);
@@ -159,6 +176,14 @@ std::string CLI::showInputWindowField(std::map<std::string, std::string> data) {
 }
 
 std::string CLI::showInputWindowCell(std::string columnName, std::string data) {
+    for (int i=0; i<90;i++) {
+        mvprintw(22,i, " ");
+        mvprintw(23,i, " ");
+        mvprintw(24,i, " ");
+        mvprintw(25,i, " ");
+    }
+    mvprintw(22,0,"ESC - Отмена выбора Enter - Подтвердить ввод");
+    refresh();
     WINDOW *frame_input_win = newwin(12, 32, 6, 29);
     box(frame_input_win, 0, 0);
     WINDOW *input_win = newwin(3, 30, 14, 30);
@@ -214,6 +239,14 @@ std::string CLI::showInputWindowCell(std::string columnName, std::string data) {
 }
 
 std::string CLI::showInputWindowTable(std::string currentName) {
+    for (int i=0; i<90;i++) {
+        mvprintw(22,i, " ");
+        mvprintw(23,i, " ");
+        mvprintw(24,i, " ");
+        mvprintw(25,i, " ");
+    }
+    mvprintw(22,0,"ESC - Отмена выбора Enter - Подтвердить ввод");
+    refresh();
     WINDOW *frame_input_win = newwin(9, 32, 6, 29);
     box(frame_input_win, 0, 0);
     WINDOW *input_win = newwin(3, 30, 11, 30);
@@ -262,13 +295,13 @@ std::string CLI::showInputWindowTable(std::string currentName) {
 void CLI::onOpenError() {
     endwin();
     closed = true;
-    printf("Не удалось открыть базу данных, используйте аргумент -n для её создания\n");
+    printf("Не удалось открыть базу данных\n");
 }
 
 void CLI::onSQLError(std::string error) {
     endwin();
     closed = true;
-    printf((error+"\n").c_str());
+    std::cout << error << std::endl;
 }
 
 void CLI::onExtenstionError() {
