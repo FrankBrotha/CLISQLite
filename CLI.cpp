@@ -151,6 +151,8 @@ std::string CLI::showInputWindowField(std::map<std::string, std::string> data) {
         ch = wgetch(input_win);
         if (ch == 10) {
             break;
+        }else  if(ch==KEY_RESIZE){
+
         } else if (ch == 27) {
             buffer[0] = '\0';
             break;
@@ -215,6 +217,8 @@ std::string CLI::showInputWindowCell(std::string columnName, std::string data) {
         ch = wgetch(input_win);
         if (ch == 10) {
             break;
+        }else  if(ch==KEY_RESIZE){
+
         } else if (ch == 27) {
             buffer[0] = '\0';
             break;
@@ -269,6 +273,8 @@ std::string CLI::showInputWindowTable(std::string currentName) {
         ch = wgetch(input_win);
         if (ch == 10) {
             break;
+        }else  if(ch==KEY_RESIZE){
+
         } else if (ch == 27) {
             buffer[0] = '\0';
             break;
